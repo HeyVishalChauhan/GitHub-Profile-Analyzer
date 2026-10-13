@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Profile Analyzer</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 24px 8%;
+            border-bottom: 1px solid #30363d;
+            background: #161b22;
+        }
+
+        header h1 {
+            font-size: 26px;
+            color: #58a6ff;
+        }
+
+        header p {
+            color: #8b949e;
+            margin-top: 8px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .search-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 24px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        .search-box h2 {
+            margin-bottom: 15px;
+        }
+
+        form {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117;
+            color: white;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 14px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #238636;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2ea043;
+        }
+
+        .error {
+            background: #3d171d;
+            color: #ffb3ba;
+            border: 1px solid #f85149;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 24px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .avatar {
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+        }
+
+        .profile h2 {
+            margin-bottom: 8px;
+        }
+
+        .muted {
+            color: #8b949e;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .card p {
+            color: #8b949e;
+            margin-bottom: 12px;
+        }
+
+        .card h3 {
+            font-size: 28px;
+            color: #58a6ff;
+        }
+
+        .section {
+            margin: 28px 0;
+        }
+
+        .section h2 {
+            margin-bottom: 16px;
+        }
+
+        .languages {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .language {
+            background: #1f2937;
+            border: 1px solid #30363d;
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+
+        .repo {
+            margin-bottom: 14px;
+        }
+
+        .repo h3 {
+            margin-bottom: 9px;
+            overflow-wrap: anywhere;
+        }
+
+        .repo p {
+            color: #8b949e;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .repo-meta {
+            color: #8b949e;
+            font-size: 14px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            text-align: center;
+            color: #8b949e;
+            padding: 30px 15px;
+            border-top: 1px solid #30363d;
+            margin-top: 45px;
+        }
+
+        @media (max-width: 650px) {
+            header {
+                padding: 22px 20px;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            form {
+                flex-direction: column;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .profile {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>GitHub Profile Analyzer</h1>
+        <p>Explore developer profiles and repository statistics.</p>
+    </header>
+
+    <main>
+        <section class="search-box">
+            <h2>Analyze a GitHub Profile</h2>
+            <form method="POST">
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter GitHub username"
+                    value="{{ username }}"
+                    required
+                >
+                <button type="submit">Analyze Profile</button>
+            </form>
+        </section>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if profile %}
+            <section class="profile">
+                <img
+                    class="avatar"
+                    src="{{ profile.avatar_url }}"
+                    alt="GitHub avatar"
+                >
+                <div>
+                    <h2>{{ profile.name or profile.login }}</h2>
+                    <p class="muted">@{{ profile.login }}</p>
+                    <p class="muted">
+                        {{ profile.bio or "No bio provided." }}
+                    </p>
+                    <p class="muted">
+                        Followers: {{ profile.followers }}
+                        · Following: {{ profile.following }}
+                    </p>
+                    <a href="{{ profile.html_url }}" target="_blank"
+                       rel="noopener noreferrer">
+                        View GitHub Profile ↗
+                    </a>
+                </div>
+            </section>
+
+            <section class="stats">
+                <div class="card">
+                    <p>Public Repositories</p>
+                    <h3>{{ profile.public_repos }}</h3>
+                </div>
+                <div class="card">
+                    <p>Total Stars Analyzed</p>
+                    <h3>{{ total_stars }}</h3>
+                </div>
+                <div class="card">
+                    <p>Total Forks Analyzed</p>
+                    <h3>{{ total_forks }}</h3>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Programming Languages</h2>
+                <div class="languages">
+                    {% for language, count in languages.items() %}
+                        <div class="language">
+                            {{ language }} · {{ count }} repos
+                        </div>
+                    {% else %}
+                        <p class="muted">No language data available.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Top Public Repositories</h2>
+
+                {% for repo in repositories %}
+                    <article class="card repo">
+                        <h3>
+                            <a href="{{ repo.html_url }}" target="_blank"
+                               rel="noopener noreferrer">
+                                {{ repo.name }}
+                            </a>
+                        </h3>
+
+                        <p>
+                            {{ repo.description or "No description provided." }}
+                        </p>
+
+                        <div class="repo-meta">
+                            <span>⭐ {{ repo.stargazers_count }}</span>
+                            <span>⑂ {{ repo.forks_count }} forks</span>
+                            <span>Language: {{ repo.language or "Not specified" }}</span>
+                        </div>
+                    </article>
+                {% else %}
+                    <p class="muted">No public repositories found.</p>
+                {% endfor %}
+            </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        Built with Python and Flask · GitHub Profile Analyzer
+    </footer>
+</body>
+</html>
